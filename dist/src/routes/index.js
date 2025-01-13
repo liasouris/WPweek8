@@ -71,7 +71,6 @@ router.post("/api/user/login", inputValidation_1.loginValidator, async (req, res
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-// Get All Topics Route
 router.get("/api/topics", async (req, res) => {
     try {
         const topics = await Topic_1.Topic.find();
@@ -95,7 +94,7 @@ router.post("/api/topic", validateToken_1.validateToken, async (req, res) => {
             username: req.user.username,
             createdAt: new Date(),
         });
-        res.status(201).json(newTopic);
+        res.status(200).json(newTopic);
     }
     catch (error) {
         console.error(`Error creating topic: ${error.message}`);

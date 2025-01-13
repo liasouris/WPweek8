@@ -87,7 +87,6 @@ router.post(
     }
 );
 
-// Get All Topics Route
 router.get("/api/topics", async (req: Request, res: Response): Promise<void> => {
     try {
         const topics = await Topic.find();
@@ -114,7 +113,7 @@ router.post("/api/topic", validateToken, async (req: Request, res: Response): Pr
             createdAt: new Date(),
         });
 
-        res.status(201).json(newTopic);
+        res.status(200).json(newTopic);
     } catch (error: any) {
         console.error(`Error creating topic: ${error.message}`);
         res.status(500).json({ message: "Internal Server Error" });
