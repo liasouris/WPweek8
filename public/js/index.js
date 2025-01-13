@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   async function loadTopics() {
     try {
-      const response = await fetch('/topics');
+      const response = await fetch('/api/topics');
       if (!response.ok) throw new Error('Failed to fetch topics');
 
       const topics = await response.json();
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         deleteBtn.classList.add('btn', 'waves-effect', 'waves-light');
         deleteBtn.addEventListener('click', async () => {
           try {
-            const response = await fetch(`/topics/${topic.id}`, {
+            const response = await fetch(`/api/topics/${topic.id}`, {
               method: 'DELETE',
               headers: { Authorization: `Bearer ${authToken}` }, 
             });
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const content = document.getElementById('topicText').value;
 
     try {
-      const response = await fetch('/topics', {
+      const response = await fetch('/api/topics', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
