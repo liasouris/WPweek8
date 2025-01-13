@@ -33,6 +33,29 @@ export const passwordValidator = [
 ];
 
 export const loginValidator = [
-    body("username").trim().escape().notEmpty().withMessage("Username is required"),
-    body("password").trim().escape().notEmpty().withMessage("Password is required"),
+    body()
+        .custom((value, { req }) => {
+            if (!req.body.email && !req.body.username) {
+                throw new Error("Either email or username is required");
+            }
+            return true;
+        })
+        .withMessage("Either email or username is required"),
+    body("email")
+        .optional()
+        .trim()
+        .normalizeEmail()
+        .isEmail()
+        .withMessage("Invalid email address"),
+    body("username")
+        .optional()
+        .trim()
+        .escape()
+        .notEmpty()
+        .withMessage("Invalid username"),
+    body("password")
+        .trim()
+        .notEmpty()
+        .withMessage("Password is required"),
 ];
+

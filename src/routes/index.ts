@@ -10,7 +10,6 @@ import { User, IUser } from "../models/User";
 
 const router: Router = Router();
 
-// Register Route
 router.post(
     "/api/user/register",
     [...usernameValidator, ...emailValidator, ...passwordValidator],
@@ -38,7 +37,7 @@ router.post(
                 isAdmin: req.body.isAdmin || false,
             });
 
-            res.status(201).json(newUser);
+            res.status(200).json(newUser);
         } catch (error: any) {
             console.error(`Error during registration: ${error.message}`);
             res.status(500).json({ error: "Internal Server Error" });
@@ -46,7 +45,6 @@ router.post(
     }
 );
 
-// Login Route
 router.post(
     "/api/user/login",
     loginValidator,
@@ -58,11 +56,14 @@ router.post(
         }
 
         try {
-            const user: IUser | null = await User.findOne({ username: req.body.username });
+            const user: IUser | null = await User.findOne({
+                $or: [{ username: req.body.username }, { email: req.body.email }],
+            });
             if (!user) {
                 res.status(404).json({ message: "User not found" });
                 return;
             }
+            
 
             const isPasswordValid = bcrypt.compareSync(req.body.password, user.password);
             if (!isPasswordValid) {

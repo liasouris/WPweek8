@@ -12,7 +12,6 @@ const validateToken_1 = require("../middleware/validateToken");
 const Topic_1 = require("../models/Topic");
 const User_1 = require("../models/User");
 const router = (0, express_1.Router)();
-// Register Route
 router.post("/api/user/register", [...inputValidation_1.usernameValidator, ...inputValidation_1.emailValidator, ...inputValidation_1.passwordValidator], async (req, res) => {
     const errors = (0, express_validator_1.validationResult)(req);
     if (!errors.isEmpty()) {
@@ -33,14 +32,13 @@ router.post("/api/user/register", [...inputValidation_1.usernameValidator, ...in
             password: hash,
             isAdmin: req.body.isAdmin || false,
         });
-        res.status(201).json(newUser);
+        res.status(200).json(newUser);
     }
     catch (error) {
         console.error(`Error during registration: ${error.message}`);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-// Login Route
 router.post("/api/user/login", inputValidation_1.loginValidator, async (req, res) => {
     const errors = (0, express_validator_1.validationResult)(req);
     if (!errors.isEmpty()) {
@@ -48,7 +46,9 @@ router.post("/api/user/login", inputValidation_1.loginValidator, async (req, res
         return;
     }
     try {
-        const user = await User_1.User.findOne({ username: req.body.username });
+        const user = await User_1.User.findOne({
+            $or: [{ username: req.body.username }, { email: req.body.email }],
+        });
         if (!user) {
             res.status(404).json({ message: "User not found" });
             return;

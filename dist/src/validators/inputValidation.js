@@ -32,6 +32,28 @@ exports.passwordValidator = [
         .withMessage("Password must contain at least one special character (!@#$%^&*)"),
 ];
 exports.loginValidator = [
-    (0, express_validator_1.body)("username").trim().escape().notEmpty().withMessage("Username is required"),
-    (0, express_validator_1.body)("password").trim().escape().notEmpty().withMessage("Password is required"),
+    (0, express_validator_1.body)()
+        .custom((value, { req }) => {
+        if (!req.body.email && !req.body.username) {
+            throw new Error("Either email or username is required");
+        }
+        return true;
+    })
+        .withMessage("Either email or username is required"),
+    (0, express_validator_1.body)("email")
+        .optional()
+        .trim()
+        .normalizeEmail()
+        .isEmail()
+        .withMessage("Invalid email address"),
+    (0, express_validator_1.body)("username")
+        .optional()
+        .trim()
+        .escape()
+        .notEmpty()
+        .withMessage("Invalid username"),
+    (0, express_validator_1.body)("password")
+        .trim()
+        .notEmpty()
+        .withMessage("Password is required"),
 ];

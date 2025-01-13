@@ -1,99 +1,95 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const topicForm = document.getElementById('topicForm');
-    const topicsDiv = document.getElementById('topics');
-  
+document.addEventListener('DOMContentLoaded', async () => {
+  const topicsDiv = document.getElementById('topics');
+  const topicForm = document.getElementById('topicForm');
+  const postTopicBtn = document.getElementById('postTopic');
 
-    async function loadTopics() {
-      try {
-        const response = await fetch('/api/topics');
-        const topics = await response.json();
-  
-        topicsDiv.innerHTML = '';
-        topics.forEach((topic) => {
-          const topicElement = document.createElement('div');
-          topicElement.classList.add('card', 'z-depth-2', 'hoverable', 'grey', 'lighten-2');
-          topicElement.innerHTML = `
-            <div class="card-content">
-              <span class="card-title">${topic.title}</span>
-              <p>${topic.content}</p>
-              <p class="grey-text text-darken-2">By: ${topic.username} | ${new Date(topic.createdAt).toLocaleString()}</p>
-            </div>
-            <div class="card-action">
-              <button class="btn waves-effect waves-light red deleteTopic" data-id="${topic.id}">Delete</button>
-            </div>
-          `;
-          topicsDiv.appendChild(topicElement);
-  
-          topicElement.querySelector('.deleteTopic').addEventListener('click', async (event) => {
-            const topicId = event.target.getAttribute('data-id');
-            try {
-              const deleteResponse = await fetch(`/api/topics/${topicId}`, { method: 'DELETE' });
-              if (deleteResponse.ok) {
-                alert('Topic deleted successfully.');
-                loadTopics(); 
-              } else {
-                const message = await deleteResponse.text();
-                alert(`Failed to delete topic: ${message}`);
-              }
-            } catch (error) {
-              console.error('Error deleting topic:', error);
-            }
-          });
-        });
-      } catch (error) {
-        console.error('Error loading topics:', error);
-      }
+  async function loadTopics() {
+    const response = await fetch('/topics');
+    const topics = await response.json();
+
+    topics.forEach((topic) => {
+      const topicCard = document.createElement('div');
+      topicCard.classList.add('card', 'z-depth-2', 'hoverable', 'grey', 'lighten-2');
+
+      const cardContent = document.createElement('div');
+      cardContent.classList.add('card-content');
+
+      const cardTitle = document.createElement('span');
+      cardTitle.classList.add('card-title');
+      cardTitle.textContent = topic.title;
+
+      const contentP = document.createElement('p');
+      contentP.textContent = topic.content;
+
+      const infoP = document.createElement('p');
+      infoP.classList.add('grey-text', 'text-darken-2');
+      infoP.textContent = `Posted by ${topic.username} on ${new Date(topic.createdAt).toLocaleString()}`;
+
+      const cardAction = document.createElement('div');
+      cardAction.classList.add('card-action');
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = 'Delete';
+      deleteBtn.classList.add('btn', 'waves-effect', 'waves-light');
+      deleteBtn.addEventListener('click', async () => {
+        const response = await fetch(`/topics/${topic.id}`, { method: 'DELETE' });
+        if (response.ok) {
+          topicCard.remove();
+        } else {
+          alert('Failed to delete topic.');
+        }
+      });
+
+      cardContent.appendChild(cardTitle);
+      cardContent.appendChild(contentP);
+      cardContent.appendChild(infoP);
+      cardAction.appendChild(deleteBtn);
+
+      topicCard.appendChild(cardContent);
+      topicCard.appendChild(cardAction);
+      topicsDiv.appendChild(topicCard);
+    });
+  }
+
+  postTopicBtn.addEventListener('click', async () => {
+    const title = document.getElementById('topicTitle').value;
+    const content = document.getElementById('topicText').value;
+
+    const response = await fetch('/topics', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, content })
+    });
+
+    if (response.ok) {
+      location.reload();
+    } else {
+      alert('Failed to post topic.');
     }
-  
-    document.getElementById('loginForm').addEventListener('submit', async (event) => {
-      event.preventDefault();
-  
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-  
-      try {
-        const response = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-        });
-  
-        if (response.ok) {
-          alert('Login successful.');
-          topicForm.style.display = 'block'; 
-          loadTopics();
-        } else {
-          alert('Login failed.');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    });
-  
-    document.getElementById('postTopicForm').addEventListener('submit', async (event) => {
-      event.preventDefault();
-  
-      const title = document.getElementById('topicTitle').value;
-      const content = document.getElementById('topicText').value;
-  
-      try {
-        const response = await fetch('/api/topics', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, content })
-        });
-  
-        if (response.ok) {
-          alert('Topic posted successfully.');
-          loadTopics(); 
-        } else {
-          alert('Failed to post topic.');
-        }
-      } catch (error) {
-        console.error('Error posting topic:', error);
-      }
-    });
-  
-    loadTopics(); 
   });
-  
+
+  const response = await fetch('/auth/me');
+  if (response.ok) {
+    topicForm.style.display = 'block';
+  }
+
+  loadTopics();
+});
+
+document.getElementById('loginForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+
+  const response = await fetch('/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+
+  if (response.ok) {
+    location.reload();
+  } else {
+    alert('Login failed!');
+  }
+});
