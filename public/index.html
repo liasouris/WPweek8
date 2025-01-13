@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Index</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="./css/styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js" defer></script>
+  <script src="./js/index.js" defer></script>
+</head>
+<body class="grey lighten-4">
+  <nav>
+    <div class="nav-wrapper grey darken-4">
+      <a href="#" class="brand-logo">MyApp</a>
+      <ul class="right">
+        <li>
+          <form id="loginForm" class="row">
+            <div class="input-field col">
+              <input type="email" id="email" class="navbar-input" placeholder="Email" required>
+            </div>
+            <div class="input-field col">
+              <input type="password" id="password" class="navbar-input" placeholder="Password" required>
+            </div>
+            <div class="col">
+              <button type="submit" class="btn waves-effect waves-light">Login</button>
+            </div>
+          </form>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div id="topicForm" style="display: none;">
+      <h4>Create a Topic</h4>
+      <form id="postTopicForm" class="card z-depth-2 white">
+        <div class="card-content">
+          <div class="input-field">
+            <input type="text" id="topicTitle" placeholder="Topic Title" required>
+          </div>
+          <div class="input-field">
+            <textarea id="topicText" class="materialize-textarea" placeholder="Topic Content" required></textarea>
+          </div>
+        </div>
+        <div class="card-action">
+          <button type="submit" class="btn waves-effect waves-light">Post Topic</button>
+        </div>
+      </form>
+    </div>
+    <div id="topics">
+    </div>
+  </div>
+</body>
+</html>
