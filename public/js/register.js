@@ -1,19 +1,38 @@
-document.getElementById('registerForm').addEventListener('submit', async (event) => {
-  event.preventDefault();
-  const email = document.getElementById('email').value;
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
-  const isAdmin = document.getElementById('isAdmin').checked;
-
-  const response = await fetch('/register', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, username, password, isAdmin })
+const initializeRegister = () => {
+  document.getElementById("registerForm").addEventListener("submit", (event) => {
+      handleRegistration(event);
   });
+};
 
-  if (response.ok) {
-    window.location.href = 'index.html';
-  } else {
-    alert('Registration failed!');
+const handleRegistration = async (event) => {
+  event.preventDefault();
+
+  const formData = {
+      email: event.target.email.value,
+      username: event.target.username.value,
+      password: event.target.password.value,
+      isAdmin: event.target.isAdmin.checked,
+  };
+
+  try {
+      const response = await fetch("/api/user/register", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+          const errorData = await response.json();
+          document.getElementById("error").innerText = errorData.error || "Error when trying to register. Please try again.";
+      } else {
+          window.location.href = "/login.html";
+      }
+  } catch (error) {
+      console.log(`Error while trying to register: ${error.message}`);
+      document.getElementById("error").innerText = "An unexpected error occurred. Please try again later.";
   }
-});
+};
+
+document.addEventListener("DOMContentLoaded", initializeRegister);
